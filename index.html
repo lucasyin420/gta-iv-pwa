@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#00ff66">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA IV — Pegadinha de moedas</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;overflow:hidden;background:radial-gradient(circle at 50% 15%,#063b32,#030807 68%);color:#d9fff1;font-family:Consolas,'Courier New',monospace}
+#launch{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:22px}
+.launchbox{max-width:520px;background:linear-gradient(145deg,#071b18,#06110f);border:1px solid #00ff9d;border-radius:12px;padding:28px;box-shadow:0 0 28px #00ff9d33,0 20px 70px #000b}
+button{cursor:pointer;font-weight:bold;border:0;border-radius:12px;padding:13px 18px}
+#open{background:#00ff9d;color:#03251a;margin-top:12px;box-shadow:0 0 18px #00ff9d66}
+#window{display:none;position:fixed;width:min(620px,calc(100vw - 24px));left:50%;top:50%;transform:translate(-50%,-50%);background:linear-gradient(145deg,#071b18,#050d0b);border:1px solid #00ff9d;border-radius:12px;box-shadow:0 0 30px #00ff9d44,0 20px 80px #000c;overflow:hidden}
+#window.active{display:block}
+#window{transition:left .7s ease, top .7s ease;position:fixed}
+#window.glitch{animation:glitch .22s steps(2,end) 1}
+#window.tick-red{box-shadow:0 0 32px #ff173d99,0 20px 80px #000c;border-color:#ff244b}
+@keyframes glitch{
+  0%{transform:translate(0,0);filter:hue-rotate(0deg)}
+  20%{transform:translate(-3px,1px);filter:hue-rotate(35deg)}
+  45%{transform:translate(3px,-1px);filter:hue-rotate(-25deg)}
+  70%{transform:translate(-2px,0);filter:contrast(1.25)}
+  100%{filter:none}
+}
+#bar{position:relative}
+#bar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:#00ff9d;opacity:.7;animation:scanline 2.2s linear infinite}
+@keyframes scanline{0%{transform:scaleX(.08);transform-origin:left}50%{transform:scaleX(1);transform-origin:left}100%{transform:scaleX(.08);transform-origin:right}}
+#bar{padding:12px 16px;background:#0b2921;border-bottom:1px solid #00ff9d55;display:flex;align-items:center;justify-content:space-between;cursor:move;user-select:none}
+#bar b{font-size:13px;letter-spacing:1px;color:#00ffad}
+#close{background:#173d31;color:#baffdf;padding:6px 10px}
+.content{padding:20px}
+h1{font-size:clamp(22px,5vw,32px);margin:0 0 8px}
+.muted{color:#a5d9c4;line-height:1.45}
+.stats{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0}
+.stat{flex:1;min-width:110px;background:#080e1d;border:1px solid #35415e;border-radius:11px;padding:10px}
+.stat small{display:block;color:#9daac8;margin-bottom:5px}.stat strong{font-size:21px}
+.playarea{position:relative;height:245px;background:linear-gradient(145deg,#03120f,#09251c);border:1px dashed #00b978;border-radius:10px;overflow:hidden;touch-action:none}
+.coin{position:absolute;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#d7fff0,#00ff9d 58%,#008b58);color:#003b27;font-weight:900;border:2px solid #aaffdc;box-shadow:0 4px 0 #00633f,0 0 20px #00ff9d88;cursor:grab;user-select:none;touch-action:none}
+.coin.drag{z-index:5;cursor:grabbing;transform:scale(1.12)}
+#safe{margin-top:14px;min-height:72px;border:2px dashed #00ff9d;border-radius:10px;background:#0b211b;color:#9bffd7;display:grid;place-items:center;text-align:center;font-weight:bold;padding:10px}
+#safe.over{background:#4b3d20;border-color:#fff0a3}
+.hint{font-size:12px;color:#98a6c7;margin:12px 0 0}
+#result{display:none;position:fixed;inset:0;z-index:10;place-items:center;text-align:center;padding:24px}
+#result.show{display:grid}
+#result.fail{background:linear-gradient(135deg,#062d26,#020b09)}
+#result.win{background:linear-gradient(135deg,#c9ffe8,#65e6ae);color:#063b27}
+#result h2{font-size:clamp(34px,8vw,60px);margin:0 0 12px}
+#result p{font-size:clamp(20px,4vw,27px);font-weight:bold}
+#again{background:white;color:#222}
+#disclosure{font-size:11px;color:#6da58e;margin-top:12px}
+@media(max-width:480px){.content{padding:14px}.playarea{height:220px}}
+</style>
+</head>
+<body>
+<section id="launch">
+ <div class="launchbox">
+  <div style="font-size:42px">🎮</div>
+  <h1>GTA IV // CYBER CHALLENGE</h1>
+  <p class="muted">Abra a janela do desafio e tente guardar 500 moedas no cofrinho. É uma brincadeira de navegador: nada será bloqueado ou alterado no aparelho.</p>
+  <button id="open">ABRIR DESAFIO</button>
+  <div id="disclosure">SIMULAÇÃO / PEGADINHA • SEM PAGAMENTO REAL</div>
+ </div>
+</section>
+<section id="window" aria-label="Desafio de moedas">
+ <header id="bar"><b>>> CYBER TERMINAL // SIMULAÇÃO</b><button id="close" title="Fechar">✕</button></header>
+ <div class="content">
+  <h1> [ COLETE 500 CRÉDITOS AGORA... ] </h1>
+  <p class="muted">Arraste uma moeda até o cofrinho. Cada uma vale 10. Há 5 moedas na tela; cada moeda recolhida reaparece após 1 segundo.</p>
+  <div class="stats">
+   <div class="stat"><small>NO COFRINHO</small><strong><span id="total">0</span> / 500</strong></div>
+   <div class="stat"><small>TEMPO</small><strong><span id="time">60</span>s</strong></div>
+   <div class="stat"><small>MOEDAS NA ÁREA</small><strong id="available">5</strong></div>
+  </div>
+  <div class="playarea" id="playarea" aria-label="Área das moedas"></div>
+  <div id="safe">[ COFRE DIGITAL ]<br><span id="bank">0 / 500</span></div>
+  <p class="hint">Dica: no celular, toque e arraste. No computador, clique e arraste. A janela pode ser movida pela barra superior.</p>
+ </div>
+</section>
+<section id="result" aria-live="polite">
+ <div><h2 id="resultTitle"></h2><p id="resultText"></p><p>ERA UMA PEGADINHA 🤣</p><button id="again">Jogar novamente</button></div>
+</section>
+<script>
+const goal=50, coinValue=10, maxOnScreen=5, duration=60;
+let deposited=0, seconds=duration, timer=null, ended=false, started=false, drag=null, replenishTimers=[];
+const area=document.getElementById('playarea'), safe=document.getElementById('safe'), win=document.getElementById('window');
+const totalEl=document.getElementById('total'), bankEl=document.getElementById('bank'), timeEl=document.getElementById('time'), availEl=document.getElementById('available');
+function update(){
+ totalEl.textContent=deposited*coinValue;bankEl.textContent=(deposited*coinValue)+' / 500';
+ timeEl.textContent=seconds;availEl.textContent=area.querySelectorAll('.coin').length;
+}
+function placeCoin(){
+ if(ended || area.querySelectorAll('.coin').length>=maxOnScreen)return;
+ const c=document.createElement('div');c.className='coin';c.textContent='10';c.setAttribute('role','button');c.setAttribute('aria-label','Moeda virtual de 10');
+ const maxX=Math.max(0,area.clientWidth-50),maxY=Math.max(0,area.clientHeight-50);
+ c.style.left=Math.floor(Math.random()*maxX)+'px';c.style.top=Math.floor(Math.random()*maxY)+'px';
+ c.addEventListener('pointerdown',startDrag);area.appendChild(c);update();
+}
+function startDrag(e){
+ if(ended)return;e.preventDefault();const c=e.currentTarget, r=c.getBoundingClientRect();
+ drag={coin:c,dx:e.clientX-r.left,dy:e.clientY-r.top};c.classList.add('drag');c.setPointerCapture(e.pointerId);
+ c.addEventListener('pointermove',moveDrag);c.addEventListener('pointerup',endDrag,{once:true});c.addEventListener('pointercancel',endDrag,{once:true});
+}
+function moveDrag(e){
+ if(!drag)return;const rect=area.getBoundingClientRect();
+ let x=e.clientX-rect.left-drag.dx,y=e.clientY-rect.top-drag.dy;
+ x=Math.max(0,Math.min(area.clientWidth-48,x));y=Math.max(0,Math.min(area.clientHeight-48,y));
+ drag.coin.style.left=x+'px';drag.coin.style.top=y+'px';
+ const s=safe.getBoundingClientRect();safe.classList.toggle('over',e.clientX>=s.left&&e.clientX<=s.right&&e.clientY>=s.top&&e.clientY<=s.bottom);
+}
+function endDrag(e){
+ if(!drag)return;const c=drag.coin;c.classList.remove('drag');c.removeEventListener('pointermove',moveDrag);
+ const s=safe.getBoundingClientRect(),inside=e.clientX>=s.left&&e.clientX<=s.right&&e.clientY>=s.top&&e.clientY<=s.bottom;
+ drag=null;safe.classList.remove('over');
+ if(inside){c.remove();deposited++;update();if(deposited>=goal){finish(true);return}
+   replenishTimers.push(setTimeout(()=>{if(!ended){placeCoin();update()}},1000));
+ }
+}
+function finish(won){
+ if(ended)return;ended=true;clearInterval(timer);replenishTimers.forEach(clearTimeout);
+ document.getElementById('resultTitle').textContent=won?'Você conseguiu! ✨👍':'Que pena! 😅';
+ document.getElementById('resultText').textContent=won?'Missão concluída!':'Você não conseguiu...';
+ document.getElementById('result').className='show '+(won?'win':'fail');
+}
+function start(){
+ clearInterval(timer);replenishTimers.forEach(clearTimeout);replenishTimers=[];
+ deposited=0;seconds=duration;ended=false;started=true;area.innerHTML='';
+ document.getElementById('result').className='';
+ for(let i=0;i<maxOnScreen;i++)placeCoin();update();
+ timer=setInterval(()=>{
+  seconds--;update();
+  win.classList.remove('tick-red','glitch');
+  void win.offsetWidth;
+  win.classList.add('tick-red','glitch');
+  setTimeout(()=>win.classList.remove('tick-red','glitch'),260);
+  if(seconds<=0)finish(false)
+},1000);
+}
+function restart(){document.getElementById('result').className='';start()}
+document.getElementById('open').addEventListener('click',()=>{document.getElementById('launch').style.display='none';win.classList.add('active');win.style.left='50%';win.style.top='50%';win.style.transform='translate(-50%,-50%)';start();startRelocation()});
+document.getElementById('close').addEventListener('click',()=>{clearInterval(timer);clearInterval(relocateTimer);ended=true;win.classList.remove('active');document.getElementById('launch').style.display='grid'});
+document.getElementById('again').addEventListener('click',restart);
+// Window is draggable by its title bar, but stays within the visible page.
+const bar=document.getElementById('bar');let moving=null, relocateTimer=null;
+function moveWindowRandomly(){
+ if(!win.classList.contains('active') || moving)return;
+ const r=win.getBoundingClientRect();
+ const maxX=Math.max(8,innerWidth-r.width-8), maxY=Math.max(8,innerHeight-r.height-8);
+ const x=8+Math.random()*Math.max(0,maxX-8), y=8+Math.random()*Math.max(0,maxY-8);
+ win.style.transform='none'; win.style.left=x+'px'; win.style.top=y+'px';
+}
+function startRelocation(){clearInterval(relocateTimer);relocateTimer=setInterval(moveWindowRandomly,5000)}
+bar.addEventListener('pointerdown',e=>{if(e.target.id==='close')return;const r=win.getBoundingClientRect();moving={dx:e.clientX-r.left,dy:e.clientY-r.top};bar.setPointerCapture(e.pointerId)});
+bar.addEventListener('pointermove',e=>{if(!moving)return;win.style.transform='none';let x=e.clientX-moving.dx,y=e.clientY-moving.dy;x=Math.max(8,Math.min(innerWidth-win.offsetWidth-8,x));y=Math.max(8,Math.min(innerHeight-win.offsetHeight-8,y));win.style.left=x+'px';win.style.top=y+'px'});
+bar.addEventListener('pointerup',()=>moving=null);bar.addEventListener('pointercancel',()=>moving=null);
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .catch(error => console.error("Erro no PWA:", error));
+  });
+}
+</script>
+</body>
+</html>
