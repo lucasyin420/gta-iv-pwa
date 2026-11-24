@@ -156,6 +156,15 @@ function startRelocation(){clearInterval(relocateTimer);relocateTimer=setInterva
 bar.addEventListener('pointerdown',e=>{if(e.target.id==='close')return;const r=win.getBoundingClientRect();moving={dx:e.clientX-r.left,dy:e.clientY-r.top};bar.setPointerCapture(e.pointerId)});
 bar.addEventListener('pointermove',e=>{if(!moving)return;win.style.transform='none';let x=e.clientX-moving.dx,y=e.clientY-moving.dy;x=Math.max(8,Math.min(innerWidth-win.offsetWidth-8,x));y=Math.max(8,Math.min(innerHeight-win.offsetHeight-8,y));win.style.left=x+'px';win.style.top=y+'px'});
 bar.addEventListener('pointerup',()=>moving=null);bar.addEventListener('pointercancel',()=>moving=null);
+const abriuComoApp =
+  window.matchMedia("(display-mode: standalone)").matches ||
+  window.navigator.standalone === true;
+
+if (abriuComoApp) {
+  installButton.style.display = "none";
+} else {
+  document.getElementById("open").style.display = "none";
+}
 </script>
 <script>
 if ("serviceWorker" in navigator) {
